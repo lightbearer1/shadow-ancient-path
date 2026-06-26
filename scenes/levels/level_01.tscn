@@ -1,12 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://clevel01default"]
+[gd_scene load_steps=13 format=3 uid="uid://clevel01default"]
 
 [ext_resource type="Script" path="res://scripts/systems/camera_controller.gd" id="1_cam"]
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="2_player"]
 [ext_resource type="Script" path="res://scripts/enemy/enemy_spawner.gd" id="3_spawner"]
-[ext_resource type="Script" path="res://scripts/enemy/shadow_crawler.gd" id="4_crawler"]
-[ext_resource type="Script" path="res://scripts/enemy/wraith.gd" id="5_wraith"]
 [ext_resource type="Script" path="res://scripts/combat/hit_box.gd" id="6_hitbox"]
 [ext_resource type="Script" path="res://scripts/combat/hurt_box.gd" id="7_hurtbox"]
+[ext_resource type="PackedScene" uid="uid://chuddefault01" path="res://scenes/ui/hud.tscn" id="8_hud"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 16.0
@@ -25,6 +24,12 @@ size = Vector2(40, 20)
 
 [node name="Level01" type="Node2D"]
 
+;; === BACKGROUND ===
+[node name="Background" type="ColorRect" parent="."]
+color = Color(0.05, 0.05, 0.11, 1)
+size = Vector2(3840, 720)
+
+;; === CAMERA ===
 [node name="Camera2D" type="Camera2D" parent="."]
 script = ExtResource("1_cam")
 current_room = 0
@@ -32,6 +37,10 @@ room_bounds = Array[Rect2]([Rect2(0, 0, 1280, 720), Rect2(1280, 0, 1280, 720), R
 position_smoothing_enabled = true
 position_smoothing_speed = 5.0
 
+;; === HUD ===
+[node name="HUD" parent="." instance=ExtResource("8_hud")]
+
+;; === PLAYER ===
 [node name="Player" type="CharacterBody2D" parent="." groups=["player"]]
 position = Vector2(200, 500)
 collision_layer = 1
@@ -40,6 +49,11 @@ script = ExtResource("2_player")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 shape = SubResource("CircleShape2D_player")
+
+[node name="PlayerVisual" type="ColorRect" parent="Player"]
+color = Color(0.29, 0.56, 0.85, 1)
+size = Vector2(32, 32)
+position = Vector2(-16, -16)
 
 [node name="HurtBox" type="Area2D" parent="Player"]
 collision_layer = 2
@@ -62,77 +76,143 @@ monitoring = false
 position = Vector2(0, 0)
 shape = SubResource("RectangleShape2D_sword")
 
-;; --- ROOM 0: Starting Room ---
+;; ============================================================
+;; ROOM 0: Starting Room (0-1280)
+;; ============================================================
 [node name="Room0" type="Node2D" parent="."]
 
+;; Floor
 [node name="Floor0" type="StaticBody2D" parent="Room0"]
 position = Vector2(640, 700)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room0/Floor0"]
 shape = SubResource("RectangleShape2D_floor")
 
+[node name="Visual" type="ColorRect" parent="Room0/Floor0"]
+color = Color(0.25, 0.25, 0.25, 1)
+size = Vector2(1280, 32)
+position = Vector2(-640, -16)
+
+;; Left Wall
 [node name="LeftWall0" type="StaticBody2D" parent="Room0"]
 position = Vector2(0, 360)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room0/LeftWall0"]
 shape = SubResource("RectangleShape2D_wall")
 
+[node name="Visual" type="ColorRect" parent="Room0/LeftWall0"]
+color = Color(0.2, 0.2, 0.22, 1)
+size = Vector2(32, 720)
+position = Vector2(-16, -360)
+
+;; Right Wall
 [node name="RightWall0" type="StaticBody2D" parent="Room0"]
 position = Vector2(1280, 360)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room0/RightWall0"]
 shape = SubResource("RectangleShape2D_wall")
 
+[node name="Visual" type="ColorRect" parent="Room0/RightWall0"]
+color = Color(0.2, 0.2, 0.22, 1)
+size = Vector2(32, 720)
+position = Vector2(-16, -360)
+
+;; Platform 1
 [node name="Platform0" type="StaticBody2D" parent="Room0"]
 position = Vector2(400, 520)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room0/Platform0"]
 shape = SubResource("RectangleShape2D_platform")
 
+[node name="Visual" type="ColorRect" parent="Room0/Platform0"]
+color = Color(0.3, 0.25, 0.2, 1)
+size = Vector2(200, 16)
+position = Vector2(-100, -8)
+
+;; Platform 2
 [node name="Platform1" type="StaticBody2D" parent="Room0"]
 position = Vector2(900, 460)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room0/Platform1"]
 shape = SubResource("RectangleShape2D_platform")
 
+[node name="Visual" type="ColorRect" parent="Room0/Platform1"]
+color = Color(0.3, 0.25, 0.2, 1)
+size = Vector2(200, 16)
+position = Vector2(-100, -8)
+
+;; Spawner (disabled in starting room)
 [node name="Spawner0" type="Node2D" parent="Room0"]
 position = Vector2(800, 600)
 script = ExtResource("3_spawner")
 auto_start = false
 
-;; --- ROOM 1: Combat Room ---
+;; ============================================================
+;; ROOM 1: Combat Room (1280-2560)
+;; ============================================================
 [node name="Room1" type="Node2D" parent="."]
 
+;; Floor
 [node name="Floor1" type="StaticBody2D" parent="Room1"]
 position = Vector2(1920, 700)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room1/Floor1"]
 shape = SubResource("RectangleShape2D_floor")
 
+[node name="Visual" type="ColorRect" parent="Room1/Floor1"]
+color = Color(0.25, 0.25, 0.25, 1)
+size = Vector2(1280, 32)
+position = Vector2(-640, -16)
+
+;; Left Wall
 [node name="LeftWall1" type="StaticBody2D" parent="Room1"]
 position = Vector2(1280, 360)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room1/LeftWall1"]
 shape = SubResource("RectangleShape2D_wall")
 
+[node name="Visual" type="ColorRect" parent="Room1/LeftWall1"]
+color = Color(0.2, 0.2, 0.22, 1)
+size = Vector2(32, 720)
+position = Vector2(-16, -360)
+
+;; Right Wall
 [node name="RightWall1" type="StaticBody2D" parent="Room1"]
 position = Vector2(2560, 360)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room1/RightWall1"]
 shape = SubResource("RectangleShape2D_wall")
 
+[node name="Visual" type="ColorRect" parent="Room1/RightWall1"]
+color = Color(0.2, 0.2, 0.22, 1)
+size = Vector2(32, 720)
+position = Vector2(-16, -360)
+
+;; Platform 3
 [node name="Platform2" type="StaticBody2D" parent="Room1"]
 position = Vector2(1700, 500)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room1/Platform2"]
 shape = SubResource("RectangleShape2D_platform")
 
+[node name="Visual" type="ColorRect" parent="Room1/Platform2"]
+color = Color(0.35, 0.2, 0.2, 1)
+size = Vector2(200, 16)
+position = Vector2(-100, -8)
+
+;; Platform 4
 [node name="Platform3" type="StaticBody2D" parent="Room1"]
 position = Vector2(2100, 440)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room1/Platform3"]
 shape = SubResource("RectangleShape2D_platform")
 
+[node name="Visual" type="ColorRect" parent="Room1/Platform3"]
+color = Color(0.35, 0.2, 0.2, 1)
+size = Vector2(200, 16)
+position = Vector2(-100, -8)
+
+;; Enemy Spawner with 2 markers
 [node name="Spawner1" type="Node2D" parent="Room1"]
 position = Vector2(1900, 600)
 script = ExtResource("3_spawner")
@@ -144,27 +224,48 @@ position = Vector2(-100, 0)
 [node name="MarkerS1_1" type="Marker2D" parent="Room1/Spawner1"]
 position = Vector2(100, 0)
 
-;; --- ROOM 2: Exit Room ---
+;; ============================================================
+;; ROOM 2: Exit Room (2560-3840)
+;; ============================================================
 [node name="Room2" type="Node2D" parent="."]
 
+;; Floor
 [node name="Floor2" type="StaticBody2D" parent="Room2"]
 position = Vector2(3200, 700)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room2/Floor2"]
 shape = SubResource("RectangleShape2D_floor")
 
+[node name="Visual" type="ColorRect" parent="Room2/Floor2"]
+color = Color(0.25, 0.25, 0.25, 1)
+size = Vector2(1280, 32)
+position = Vector2(-640, -16)
+
+;; Left Wall
 [node name="LeftWall2" type="StaticBody2D" parent="Room2"]
 position = Vector2(2560, 360)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room2/LeftWall2"]
 shape = SubResource("RectangleShape2D_wall")
 
+[node name="Visual" type="ColorRect" parent="Room2/LeftWall2"]
+color = Color(0.2, 0.2, 0.22, 1)
+size = Vector2(32, 720)
+position = Vector2(-16, -360)
+
+;; Right Wall
 [node name="RightWall2" type="StaticBody2D" parent="Room2"]
 position = Vector2(3840, 360)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Room2/RightWall2"]
 shape = SubResource("RectangleShape2D_wall")
 
+[node name="Visual" type="ColorRect" parent="Room2/RightWall2"]
+color = Color(0.2, 0.2, 0.22, 1)
+size = Vector2(32, 720)
+position = Vector2(-16, -360)
+
+;; Enemy Spawner with 2 markers
 [node name="Spawner2" type="Node2D" parent="Room2"]
 position = Vector2(3400, 600)
 script = ExtResource("3_spawner")
@@ -175,3 +276,14 @@ position = Vector2(-80, 0)
 
 [node name="MarkerS2_1" type="Marker2D" parent="Room2/Spawner2"]
 position = Vector2(80, 0)
+
+;; === Room Dividers (visual separators between rooms) ===
+[node name="Divider0" type="ColorRect" parent="."]
+color = Color(0.15, 0.15, 0.25, 1)
+size = Vector2(8, 720)
+position = Vector2(1276, 0)
+
+[node name="Divider1" type="ColorRect" parent="."]
+color = Color(0.15, 0.15, 0.25, 1)
+size = Vector2(8, 720)
+position = Vector2(2556, 0)

@@ -18,10 +18,10 @@ script = ExtResource("1_crawler")
 position = Vector2(0, -2)
 shape = SubResource("RectangleShape2D_body")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-## placeholder — dark ground creature
-scale = Vector2(2, 2)
-offset = Vector2(0, -12)
+[node name="EnemyVisual" type="ColorRect" parent="."]
+color = Color(0.55, 0.27, 0.07, 1)
+size = Vector2(28, 32)
+position = Vector2(-14, -28)
 
 [node name="HurtBox" type="Area2D" parent="."]
 collision_layer = 2
