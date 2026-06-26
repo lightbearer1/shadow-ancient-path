@@ -361,29 +361,29 @@ func _spawn_slash_effect() -> void:
 
 
 func _draw_slash(slash_node: Node2D, direction: int) -> void:
-	## Draw slash effect matching actual HitBox dimensions (40x20)
-	var hitbox_w: float = 40.0
-	var hitbox_h: float = 20.0
+	## Draw slash centered on HitBox origin (matches RectangleShape2D 40x20 centered at origin)
+	var hw: float = 20.0  ## half-width
+	var hh: float = 10.0  ## half-height
 	var slash_color: Color = Color(0.9, 0.85, 0.7, 0.8)
 	var glow_color: Color = Color(1.0, 0.9, 0.5, 0.25)
 
-	## Hitbox outline
-	slash_node.draw_rect(Rect2(0, -hitbox_h / 2.0, hitbox_w, hitbox_h), Color(1, 1, 0.8, 0.3), false, 1.5)
+	## Hitbox outline centered at origin
+	slash_node.draw_rect(Rect2(-hw, -hh, hw * 2, hh * 2), Color(1, 1, 0.8, 0.3), false, 1.5)
 
-	## Glow layer (3 wide diagonal strokes)
+	## Glow layer
 	for i in range(3):
 		var y_off: float = (i - 1) * 5.0
 		slash_node.draw_line(
-			Vector2(2.0, -hitbox_h / 2.0 + 4.0 + y_off),
-			Vector2(hitbox_w - 2.0, hitbox_h / 2.0 - 4.0 + y_off),
+			Vector2(-hw + 2.0, -hh + 4.0 + y_off),
+			Vector2(hw - 2.0, hh - 4.0 + y_off),
 			glow_color, 5.0)
 
-	## Main slash (3 sharp diagonal strokes)
+	## Main slash
 	for i in range(3):
 		var y_off: float = (i - 1) * 5.0
 		slash_node.draw_line(
-			Vector2(2.0, -hitbox_h / 2.0 + 4.0 + y_off),
-			Vector2(hitbox_w - 2.0, hitbox_h / 2.0 - 4.0 + y_off),
+			Vector2(-hw + 2.0, -hh + 4.0 + y_off),
+			Vector2(hw - 2.0, hh - 4.0 + y_off),
 			slash_color, 2.0)
 
 
