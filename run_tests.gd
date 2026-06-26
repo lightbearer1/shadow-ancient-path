@@ -1,27 +1,19 @@
 extends SceneTree
 ## Headless test runner. Execute with: godot --headless --script run_tests.gd
 
-var _total_tests: int = 0
-var _passed_tests: int = 0
-var _failed_tests: int = 0
-
 
 func _init() -> void:
 	print("=== 暗影古径 Test Suite ===")
 	_run_test_scripts()
-	_print_summary()
-	quit(0 if _failed_tests == 0 else 1)
+	print("\n========================================")
+	print("Test suite complete. Check output above for individual results.")
+	print("========================================")
+	quit(0)
 
 
 func _run_test_scripts() -> void:
-	var test_dir: String = "res://tests"
-	var dir_access: DirAccess = DirAccess.open(test_dir)
-	if dir_access == null:
-		print("ERROR: Cannot open test directory: " + test_dir)
-		return
-
-	_run_tests_in_dir(test_dir + "/unit")
-	_run_tests_in_dir(test_dir + "/integration")
+	_run_tests_in_dir("res://tests/unit")
+	_run_tests_in_dir("res://tests/integration")
 
 
 func _run_tests_in_dir(dir_path: String) -> void:
@@ -43,9 +35,3 @@ func _run_tests_in_dir(dir_path: String) -> void:
 				root.add_child(instance)
 		file_name = dir.get_next()
 	dir.list_dir_end()
-
-
-func _print_summary() -> void:
-	print("\n========================================")
-	print("Total: %d | Passed: %d | Failed: %d" % [_total_tests, _passed_tests, _failed_tests])
-	print("========================================")

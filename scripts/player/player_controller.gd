@@ -167,7 +167,6 @@ func take_damage(amount: int, knockback_direction: Vector2) -> void:
 
 	if _current_health <= 0:
 		_set_state(State.DEAD)
-		EventBus.player_died.emit()
 		await get_tree().create_timer(1.5).timeout
 		GameManager.end_game()
 	else:
@@ -187,7 +186,7 @@ func _check_state_transitions() -> void:
 	if _current_state == State.DEAD or _current_state == State.DASH or _current_state == State.HURT:
 		return
 
-	if _current_state == State.ATTACK and _attack_timer <= 0.15:
+	if _current_state == State.ATTACK and _attack_timer > (stats.attack_cooldown - 0.15):
 		return
 
 	if not is_on_floor() and _current_state not in [State.JUMP, State.FALL]:

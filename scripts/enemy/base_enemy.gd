@@ -24,6 +24,9 @@ enum State {
 var _current_state: State = State.IDLE
 var _current_health: int
 var _attack_timer: float = 0.0
+var _idle_timer: float = 0.0
+var _attack_state_timer: float = 0.0
+var _hurt_timer: float = 0.0
 var _player_ref: PlayerController = null
 var _patrol_direction: int = 1
 var _gravity: float = 980.0
@@ -91,9 +94,11 @@ func _detect_player() -> void:
 
 func _handle_idle(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0, move_speed * delta * 5.0)
-	await get_tree().create_timer(1.0).timeout
-	if _current_state == State.IDLE:
-		_set_state(State.PATROL)
+	_idle_timer += delta
+	if _idle_timer >= 1.0:
+		_idle_timer = 0.0
+		if _current_state == State.IDLE:
+			_set_state(State.PATROL)
 
 
 func _handle_patrol(delta: float) -> void:
@@ -109,15 +114,18 @@ func _handle_chase(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, direction * move_speed, move_speed * delta * 10.0)
 
 
-func _handle_attack_state(_delta: float) -> void:
-	velocity.x = move_toward(velocity.x, 0, move_speed * _delta * 10.0)
-	_execute_attack()
-	await get_tree().create_timer(0.3).timeout
-	if _current_state == State.ATTACK:
-		if _player_ref != null and global_position.distance_to(_player_ref.global_position) <= detection_range:
-			_set_state(State.CHASE)
-		else:
-			_set_state(State.PATROL)
+func _handle_attack_state(delta: float) -> void:
+	velocity.x = move_toward(velocity.x, 0, move_speed * delta * 10.0)
+	if _attack_state_timer <= 0.0:
+		_execute_attack()
+	_attack_state_timer += delta
+	if _attack_state_timer >= 0.3:
+		_attack_state_timer = 0.0
+		if _current_state == State.ATTACK:
+			if _player_ref != null and global_position.distance_to(_player_ref.global_position) <= detection_range:
+				_set_state(State.CHASE)
+			else:
+				_set_state(State.PATROL)
 
 
 func _execute_attack() -> void:
@@ -140,16 +148,19 @@ func take_damage(amount: int, knockback_direction: Vector2) -> void:
 		GameManager.add_score(score_value)
 		queue_free()
 	else:
+		_hurt_timer = 0.0
 		_set_state(State.HURT)
 
 
-func _handle_hurt(_delta: float) -> void:
-	await get_tree().create_timer(0.2).timeout
-	if _current_state == State.HURT:
-		if _player_ref != null and global_position.distance_to(_player_ref.global_position) <= detection_range:
-			_set_state(State.CHASE)
-		else:
-			_set_state(State.PATROL)
+func _handle_hurt(delta: float) -> void:
+	_hurt_timer += delta
+	if _hurt_timer >= 0.2:
+		_hurt_timer = 0.0
+		if _current_state == State.HURT:
+			if _player_ref != null and global_position.distance_to(_player_ref.global_position) <= detection_range:
+				_set_state(State.CHASE)
+			else:
+				_set_state(State.PATROL)
 
 
 func _set_state(new_state: State) -> void:

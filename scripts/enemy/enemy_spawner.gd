@@ -53,6 +53,9 @@ func _spawn_next_wave() -> void:
 		if enemy.has_signal("tree_exited"):
 			enemy.tree_exited.connect(_on_enemy_removed.bind(enemy))
 
+		if wave.spawn_delay > 0.0 and i < wave.count - 1:
+			await get_tree().create_timer(wave.spawn_delay).timeout
+
 
 func _on_enemy_removed(enemy: Node) -> void:
 	_spawned_enemies.erase(enemy)

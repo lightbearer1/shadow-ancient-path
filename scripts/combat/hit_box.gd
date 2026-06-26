@@ -26,6 +26,12 @@ func _on_area_entered(area: Area2D) -> void:
 	if not area is HurtBox:
 		return
 
+	## Friendly fire prevention: check teams
+	var hurt_area: HurtBox = area as HurtBox
+	var my_hurt_box: HurtBox = get_parent().get_node_or_null("HurtBox") as HurtBox
+	if my_hurt_box != null and my_hurt_box.team == hurt_area.team:
+		return
+
 	var target: Node = area.get_parent()
 	if target in _hit_targets:
 		return

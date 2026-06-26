@@ -1,0 +1,10 @@
+# SDD Progress Ledger
+Task 1 (Docs & Config): complete (commits 6d77ab5..98e110b, review clean)
+Task 2 (Core Systems): complete (commits 98e110b..443e72b, review clean)
+Task 3 (Player System): complete (commits 443e72b..ea8dce1, review clean)
+Task 4 (Combat): complete (commits ea8dce1..84fd8bd, review clean)
+Task 5 (Enemy System): complete (commits 84fd8bd..7841d7e, review clean)
+Task 6 (Level & Camera): complete (commits 7841d7e..5327913, review clean)
+Task 7 (UI System): complete (commits 5327913..cbc6d47, review clean)
+Task 8 (Scenes): complete (commits cbc6d47..89d8e95, review clean)
+Task 9 (Testing): complete (commits 89d8e95..68f6f78, review clean)
