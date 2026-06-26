@@ -239,8 +239,8 @@ position = Vector2(-100, -8)
 [node name="Spawner1" type="Node2D" parent="Room1"]
 position = Vector2(1900, 600)
 script = ExtResource("3_spawner")
-enemy_scenes = Array[ExtResource("9_crawler_scene")]
-waves = Array[ExtResource("11_wave_crawlers")]
+enemy_scenes = Array[PackedScene]([ExtResource("9_crawler_scene")])
+waves = Array[Resource]([ExtResource("11_wave_crawlers")])
 auto_start = true
 
 [node name="MarkerS1_0" type="Marker2D" parent="Room1/Spawner1"]
@@ -308,8 +308,8 @@ position = Vector2(-16, -360)
 [node name="Spawner2" type="Node2D" parent="Room2"]
 position = Vector2(3400, 600)
 script = ExtResource("3_spawner")
-enemy_scenes = Array[ExtResource("9_crawler_scene"), ExtResource("10_wraith_scene")]
-waves = Array[ExtResource("12_wave_mixed")]
+enemy_scenes = Array[PackedScene]([ExtResource("9_crawler_scene"), ExtResource("10_wraith_scene")])
+waves = Array[Resource]([ExtResource("12_wave_mixed")])
 auto_start = true
 
 [node name="MarkerS2_0" type="Marker2D" parent="Room2/Spawner2"]
