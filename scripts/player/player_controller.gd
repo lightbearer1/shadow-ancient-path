@@ -101,10 +101,6 @@ func _handle_movement(delta: float) -> void:
 	if Input.is_action_just_pressed("attack"):
 		_start_attack()
 
-	if Input.is_action_just_pressed("jump") and not _double_jump_used:
-		velocity.y = stats.jump_velocity * 0.8
-		_double_jump_used = true
-
 	velocity.y += stats.gravity * delta
 
 
@@ -113,7 +109,9 @@ func _handle_air_movement(delta: float) -> void:
 
 	if input_dir != 0:
 		_facing_direction = int(sign(input_dir))
-		velocity.x = input_dir * stats.move_speed
+		velocity.x = move_toward(velocity.x, input_dir * stats.move_speed, stats.move_speed * delta * 8.0)
+	else:
+		velocity.x = move_toward(velocity.x, 0, stats.move_speed * delta * 4.0)
 
 	if Input.is_action_just_pressed("dash") and _can_dash:
 		_start_dash(input_dir if input_dir != 0 else _facing_direction)
@@ -133,6 +131,7 @@ func _handle_air_movement(delta: float) -> void:
 		_set_state(State.FALL)
 
 	if is_on_floor():
+		velocity.y = 0
 		_set_state(State.IDLE)
 
 
@@ -175,11 +174,29 @@ func _start_attack() -> void:
 	for hit_box: Area2D in hit_boxes:
 		if hit_box is HitBox:
 			(hit_box as HitBox).damage = int(float(stats.attack_damage) * combo_mult)
+		## Position hitbox in facing direction
+		hit_box.position.x = abs(hit_box.position.x) * _facing_direction
 		hit_box.monitoring = true
-		await get_tree().create_timer(0.15).timeout
+
+	## Visual: flash white briefly
+	var sprite: AnimatedSprite2D = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	if sprite != null:
+		sprite.modulate = Color(1.5, 1.5, 1.5, 1)
+
+	## Camera shake
+	_shake_camera(3.0, 0.08)
+
+	await get_tree().create_timer(0.15).timeout
+
+	## Reset hitbox
+	for hit_box: Area2D in hit_boxes:
 		if hit_box is HitBox:
-			(hit_box as HitBox).damage = stats.attack_damage  ## Reset
+			(hit_box as HitBox).damage = stats.attack_damage
 		hit_box.monitoring = false
+
+	## Reset sprite color
+	if sprite != null:
+		sprite.modulate = Color(1, 1, 1, 1)
 
 	if _current_state == State.ATTACK:
 		_set_state(State.IDLE)
@@ -302,6 +319,22 @@ func _update_animation() -> void:
 			sprite.play("jump")
 
 	sprite.flip_h = _facing_direction < 0
+
+
+func _shake_camera(intensity: float, duration: float) -> void:
+	var cameras: Array[Node] = get_tree().get_nodes_in_group("camera")
+	if cameras.is_empty():
+		return
+	var cam: Camera2D = cameras[0] as Camera2D
+	if cam == null:
+		return
+	var original_offset: Vector2 = cam.offset
+	var elapsed: float = 0.0
+	while elapsed < duration:
+		cam.offset = original_offset + Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
+		elapsed += get_physics_process_delta_time()
+		await get_tree().physics_frame
+	cam.offset = original_offset
 
 
 func get_current_health() -> int:
