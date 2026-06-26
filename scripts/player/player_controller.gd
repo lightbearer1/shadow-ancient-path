@@ -361,33 +361,30 @@ func _spawn_slash_effect() -> void:
 
 
 func _draw_slash(slash_node: Node2D, direction: int) -> void:
-	## Draw a 3-frame slash arc using lines
-	var arc_color: Color = Color(0.9, 0.85, 0.7, 0.8)
-	var glow_color: Color = Color(1.0, 0.9, 0.5, 0.3)
+	## Draw slash effect matching actual HitBox dimensions (40x20)
+	var hitbox_w: float = 40.0
+	var hitbox_h: float = 20.0
+	var slash_color: Color = Color(0.9, 0.85, 0.7, 0.8)
+	var glow_color: Color = Color(1.0, 0.9, 0.5, 0.25)
 
-	var center: Vector2 = Vector2.ZERO
-	var arc_points: Array[Vector2] = []
-	var arc_points_glow: Array[Vector2] = []
+	## Hitbox outline
+	slash_node.draw_rect(Rect2(0, -hitbox_h / 2.0, hitbox_w, hitbox_h), Color(1, 1, 0.8, 0.3), false, 1.5)
 
-	for i in range(9):
-		var angle: float = -PI / 3.0 + (PI / 1.5) * i / 8.0
-		if direction < 0:
-			angle = PI - angle
-		var r: float = 36.0
-		arc_points.append(center + Vector2(cos(angle) * r, sin(angle) * r))
-		arc_points_glow.append(center + Vector2(cos(angle) * (r + 8.0), sin(angle) * (r + 8.0)))
+	## Glow layer (3 wide diagonal strokes)
+	for i in range(3):
+		var y_off: float = (i - 1) * 5.0
+		slash_node.draw_line(
+			Vector2(2.0, -hitbox_h / 2.0 + 4.0 + y_off),
+			Vector2(hitbox_w - 2.0, hitbox_h / 2.0 - 4.0 + y_off),
+			glow_color, 5.0)
 
-	## Glow layer (wider)
-	for i in arc_points_glow.size() - 1:
-		slash_node.draw_line(arc_points_glow[i], arc_points_glow[i + 1], glow_color, 6.0)
-
-	## Main slash
-	for i in arc_points.size() - 1:
-		slash_node.draw_line(arc_points[i], arc_points[i + 1], arc_color, 3.0)
-
-	## Edge lines for sharpness
-	slash_node.draw_line(arc_points[0], arc_points[0] + Vector2(cos(-PI/2.5 * direction + (PI if direction < 0 else 0)), sin(-PI/2.5 * direction + (PI if direction < 0 else 0))) * 16.0, Color.WHITE, 1.5)
-	slash_node.draw_line(arc_points[-1], arc_points[-1] + Vector2(cos(-PI/2.5 * direction + (PI if direction < 0 else 0)), sin(-PI/2.5 * direction + (PI if direction < 0 else 0))) * 16.0, Color.WHITE, 1.5)
+	## Main slash (3 sharp diagonal strokes)
+	for i in range(3):
+		var y_off: float = (i - 1) * 5.0
+		slash_node.draw_line(
+			Vector2(2.0, -hitbox_h / 2.0 + 4.0 + y_off),
+			Vector2(hitbox_w - 2.0, hitbox_h / 2.0 - 4.0 + y_off),
+			slash_color, 2.0)
 
 
 func get_current_health() -> int:
