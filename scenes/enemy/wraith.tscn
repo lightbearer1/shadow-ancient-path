@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=3 uid="uid://cwraithdefault"]
+
+[ext_resource type="Script" path="res://scripts/enemy/wraith.gd" id="1_wraith"]
+[ext_resource type="Script" path="res://scripts/combat/hurt_box.gd" id="2_hurtbox"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 14.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hurt"]
+radius = 20.0
+
+[node name="Wraith" type="CharacterBody2D" groups=["enemy"]]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_wraith")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+## placeholder — floating spirit
+scale = Vector2(2, 2)
+offset = Vector2(0, -10)
+
+[node name="HurtBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("2_hurtbox")
+team = "enemy"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+shape = SubResource("CircleShape2D_hurt")

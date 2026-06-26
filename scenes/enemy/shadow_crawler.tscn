@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://cshadowcrawl"]
+
+[ext_resource type="Script" path="res://scripts/enemy/shadow_crawler.gd" id="1_crawler"]
+[ext_resource type="Script" path="res://scripts/combat/hurt_box.gd" id="2_hurtbox"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(28, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hurt"]
+size = Vector2(36, 40)
+
+[node name="ShadowCrawler" type="CharacterBody2D" groups=["enemy"]]
+collision_layer = 1
+collision_mask = 1
+script = ExtResource("1_crawler")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -2)
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+## placeholder — dark ground creature
+scale = Vector2(2, 2)
+offset = Vector2(0, -12)
+
+[node name="HurtBox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("2_hurtbox")
+team = "enemy"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
+shape = SubResource("RectangleShape2D_hurt")
