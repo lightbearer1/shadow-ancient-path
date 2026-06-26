@@ -13,3 +13,6 @@ Fix (Visual): complete (commits b3df9b1..d894d3b, ColorRect placeholders + menu 
 Fix (P0-1 Enemy Spawners): complete (commit 0b256aa, wave resources + spawner config)
 Fix (P0-2 Room Transitions): complete (commit 0b256aa, transition zones + room_transition.gd)
 Fix (P0-3 3-Hit Combo): complete (commit 0b256aa, combo system + HUD combo display)
+Feat (P1 Pixel Sprites): complete (commit 835aedb, programmatic sprite generator)
+Feat (P1 Double Jump): complete (commit 835aedb, air jump + floor reset)
+Feat (P1 Pause Menu): complete (commit 835aedb, pause overlay + continue/quit)
