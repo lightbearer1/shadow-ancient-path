@@ -28,10 +28,13 @@ func _on_body_entered(body: Node2D) -> void:
 	var current_room: int = cam.get_current_room()
 
 	if current_room == room_a:
-		## Going to room_b — teleport player relative to transition position
+		## Going to room_b
 		cam.set_room(room_b)
 		player.global_position = global_position + spawn_offset_b
 	else:
 		## Going to room_a
 		cam.set_room(room_a)
 		player.global_position = global_position + spawn_offset_a
+
+	## Force camera to snap instantly to player's new position
+	cam.snap_to_target()

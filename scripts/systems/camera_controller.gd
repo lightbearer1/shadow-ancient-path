@@ -45,5 +45,12 @@ func set_room(room_index: int) -> void:
 		limit_smoothed = true
 
 
+func snap_to_target() -> void:
+	## Instantly snap camera to follow target, resetting smoothing
+	if follow_target != null:
+		global_position = follow_target.global_position
+		reset_smoothing()
+
+
 func get_current_room() -> int:
 	return current_room
