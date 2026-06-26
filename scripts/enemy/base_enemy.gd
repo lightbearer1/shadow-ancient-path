@@ -1,7 +1,7 @@
 class_name BaseEnemy
 extends CharacterBody2D
 ## Base enemy class with finite state machine.
-## Extend for specific enemy types â€” override _execute_attack().
+## Extend for specific enemy types â€?override _execute_attack().
 
 enum State {
 	IDLE,
@@ -34,6 +34,7 @@ var _gravity: float = 980.0
 
 func _ready() -> void:
 	_current_health = max_health
+	_setup_sprite()
 
 
 func _physics_process(delta: float) -> void:
@@ -169,6 +170,35 @@ func _set_state(new_state: State) -> void:
 	if _current_state == State.DEAD:
 		return
 	_current_state = new_state
+	_update_animation()
+
+
+func _setup_sprite() -> void:
+	## Override in subclass to set specific sprite sheet
+	pass
+
+
+func _update_animation() -> void:
+	var sprite: AnimatedSprite2D = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	if sprite == null:
+		return
+
+	match _current_state:
+		State.IDLE:
+			sprite.play("idle")
+		State.PATROL:
+			sprite.play("walk")
+		State.CHASE:
+			sprite.play("walk")
+		State.ATTACK:
+			sprite.play("attack")
+		State.HURT:
+			sprite.play("hurt")
+		State.DEAD:
+			sprite.stop()
+
+	if _player_ref != null:
+		sprite.flip_h = _player_ref.global_position.x < global_position.x
 
 
 func is_dead() -> bool:

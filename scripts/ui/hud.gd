@@ -12,11 +12,6 @@ func _ready() -> void:
 	EventBus.combo_changed.connect(_on_combo_changed)
 
 
-func _process(_delta: float) -> void:
-	if Input.is_action_just_pressed("pause"):
-		GameManager.toggle_pause()
-
-
 func _on_score_changed(new_score: int) -> void:
 	_score_label.text = "Score: %d" % new_score
 

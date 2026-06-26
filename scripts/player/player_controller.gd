@@ -25,6 +25,7 @@ var _attack_timer: float = 0.0
 var _invincibility_timer: float = 0.0
 var _combo_step: int = 0
 var _combo_timeout: float = 0.0
+var _double_jump_used: bool = false
 var _can_dash: bool = true
 
 
@@ -33,6 +34,7 @@ func _ready() -> void:
 		stats = load("res://resources/player/default_stats.tres") as PlayerStats
 	_current_health = stats.max_health
 	EventBus.player_health_changed.emit(_current_health, stats.max_health)
+	_setup_sprite()
 
 
 func _physics_process(delta: float) -> void:
@@ -83,6 +85,9 @@ func _handle_movement(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0, stats.move_speed * delta * 10.0)
 		_set_state(State.IDLE)
 
+	if is_on_floor():
+		_double_jump_used = false
+
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = stats.jump_velocity
 		_set_state(State.JUMP)
@@ -95,6 +100,10 @@ func _handle_movement(delta: float) -> void:
 
 	if Input.is_action_just_pressed("attack"):
 		_start_attack()
+
+	if Input.is_action_just_pressed("jump") and not _double_jump_used:
+		velocity.y = stats.jump_velocity * 0.8
+		_double_jump_used = true
 
 	velocity.y += stats.gravity * delta
 
@@ -111,6 +120,10 @@ func _handle_air_movement(delta: float) -> void:
 
 	if Input.is_action_just_pressed("attack"):
 		_start_attack()
+
+	if Input.is_action_just_pressed("jump") and not _double_jump_used:
+		velocity.y = stats.jump_velocity * 0.8
+		_double_jump_used = true
 
 	velocity.y += stats.gravity * delta
 
@@ -221,6 +234,74 @@ func _set_state(new_state: State) -> void:
 	if _current_state == State.DEAD:
 		return
 	_current_state = new_state
+	_update_animation()
+
+
+func _setup_sprite() -> void:
+	var sprite: AnimatedSprite2D = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	if sprite == null:
+		return
+
+	var sheet: ImageTexture = PixelSpriteGenerator.generate_player_sheet()
+	var frames: SpriteFrames = SpriteFrames.new()
+
+	## Slice the sheet into 6 frames (each 32x32)
+	for i in 6:
+		var frame_img: Image = Image.create(32, 32, false, Image.FORMAT_RGBA8)
+		frame_img.blit_rect(sheet.get_image(), Rect2i(i * 32, 0, 32, 32), Vector2i.ZERO)
+		var frame_tex: ImageTexture = ImageTexture.create_from_image(frame_img)
+		frames.add_frame("default", frame_tex)
+
+	## Create animations
+	frames.set_animation_speed("default", 5.0)
+	frames.add_animation("idle")
+	frames.set_animation_speed("idle", 1.0)
+	frames.set_animation_loop("idle", true)
+	frames.add_frame("idle", frames.get_frame_texture("default", 0))
+
+	frames.add_animation("run")
+	frames.set_animation_speed("run", 8.0)
+	frames.set_animation_loop("run", true)
+	frames.add_frame("run", frames.get_frame_texture("default", 1))
+	frames.add_frame("run", frames.get_frame_texture("default", 2))
+
+	frames.add_animation("jump")
+	frames.set_animation_loop("jump", false)
+	frames.add_frame("jump", frames.get_frame_texture("default", 3))
+
+	frames.add_animation("attack")
+	frames.set_animation_speed("attack", 12.0)
+	frames.set_animation_loop("attack", false)
+	frames.add_frame("attack", frames.get_frame_texture("default", 4))
+
+	frames.add_animation("hurt")
+	frames.set_animation_loop("hurt", false)
+	frames.add_frame("hurt", frames.get_frame_texture("default", 5))
+
+	sprite.sprite_frames = frames
+	sprite.play("idle")
+
+
+func _update_animation() -> void:
+	var sprite: AnimatedSprite2D = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	if sprite == null:
+		return
+
+	match _current_state:
+		State.IDLE:
+			sprite.play("idle")
+		State.RUN:
+			sprite.play("run")
+		State.JUMP, State.FALL:
+			sprite.play("jump")
+		State.ATTACK:
+			sprite.play("attack")
+		State.HURT:
+			sprite.play("hurt")
+		State.DASH:
+			sprite.play("jump")
+
+	sprite.flip_h = _facing_direction < 0
 
 
 func get_current_health() -> int:

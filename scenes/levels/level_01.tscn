@@ -60,10 +60,9 @@ stats = ExtResource("13_stats")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 shape = SubResource("CircleShape2D_player")
 
-[node name="PlayerVisual" type="ColorRect" parent="Player"]
-color = Color(0.29, 0.56, 0.85, 1)
-size = Vector2(32, 32)
-position = Vector2(-16, -16)
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
+position = Vector2(0, -8)
+scale = Vector2(2, 2)
 
 [node name="HurtBox" type="Area2D" parent="Player"]
 collision_layer = 2

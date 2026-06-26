@@ -17,10 +17,9 @@ script = ExtResource("1_wraith")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_body")
 
-[node name="EnemyVisual" type="ColorRect" parent="."]
-color = Color(0.48, 0.41, 0.93, 1)
-size = Vector2(28, 28)
-position = Vector2(-14, -24)
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -10)
+scale = Vector2(2, 2)
 
 [node name="HurtBox" type="Area2D" parent="."]
 collision_layer = 2

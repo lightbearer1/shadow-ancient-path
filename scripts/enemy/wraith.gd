@@ -1,4 +1,4 @@
-class_name Wraith
+﻿class_name Wraith
 extends BaseEnemy
 ## Floating enemy with ranged projectile attack. Hovers above ground.
 
@@ -21,6 +21,42 @@ func _ready() -> void:
 	attack_cooldown = 2.0
 	score_value = 150
 	_gravity = 0.0  ## Wraiths float — no gravity
+
+
+func _setup_sprite() -> void:
+	var sprite: AnimatedSprite2D = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D
+	if sprite == null:
+		return
+
+	var sheet: ImageTexture = PixelSpriteGenerator.generate_wraith_sheet()
+	var frames: SpriteFrames = SpriteFrames.new()
+
+	for i in 5:
+		var frame_img: Image = Image.create(32, 32, false, Image.FORMAT_RGBA8)
+		frame_img.blit_rect(sheet.get_image(), Rect2i(i * 32, 0, 32, 32), Vector2i.ZERO)
+		var frame_tex: ImageTexture = ImageTexture.create_from_image(frame_img)
+		frames.add_frame("default", frame_tex)
+
+	frames.add_animation("idle")
+	frames.set_animation_loop("idle", true)
+	frames.add_frame("idle", frames.get_frame_texture("default", 0))
+
+	frames.add_animation("walk")
+	frames.set_animation_speed("walk", 4.0)
+	frames.set_animation_loop("walk", true)
+	frames.add_frame("walk", frames.get_frame_texture("default", 1))
+	frames.add_frame("walk", frames.get_frame_texture("default", 2))
+
+	frames.add_animation("attack")
+	frames.set_animation_loop("attack", false)
+	frames.add_frame("attack", frames.get_frame_texture("default", 3))
+
+	frames.add_animation("hurt")
+	frames.set_animation_loop("hurt", false)
+	frames.add_frame("hurt", frames.get_frame_texture("default", 4))
+
+	sprite.sprite_frames = frames
+	sprite.play("idle")
 
 
 func _physics_process(delta: float) -> void:
