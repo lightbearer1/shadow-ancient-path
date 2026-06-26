@@ -22,3 +22,6 @@ signal game_state_changed(new_state: String)
 
 ## Emitted when score changes.
 signal score_changed(new_score: int)
+
+## Emitted when the player's combo step changes.
+signal combo_changed(combo_step: int)

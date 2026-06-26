@@ -1,0 +1,8 @@
+[gd_resource type="Resource" script_class="EnemyWave" load_steps=2 format=3 uid="uid://dwave1c1w"]
+
+[ext_resource type="Script" path="res://scripts/enemy/enemy_wave.gd" id="1_wave"]
+
+[resource]
+script = ExtResource("1_wave")
+count = 2
+spawn_delay = 1.0

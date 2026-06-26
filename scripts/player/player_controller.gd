@@ -24,6 +24,7 @@ var _dash_cooldown_timer: float = 0.0
 var _attack_timer: float = 0.0
 var _invincibility_timer: float = 0.0
 var _combo_step: int = 0
+var _combo_timeout: float = 0.0
 var _can_dash: bool = true
 
 
@@ -63,6 +64,12 @@ func _update_timers(delta: float) -> void:
 
 	if _dash_cooldown_timer <= 0.0 and not _can_dash:
 		_can_dash = true
+
+	if _combo_step > 0:
+		_combo_timeout = max(0.0, _combo_timeout - delta)
+		if _combo_timeout <= 0.0:
+			_combo_step = 0
+			EventBus.combo_changed.emit(_combo_step)
 
 
 func _handle_movement(delta: float) -> void:
@@ -137,13 +144,28 @@ func _handle_dash(_delta: float) -> void:
 func _start_attack() -> void:
 	if _attack_timer > 0.0:
 		return
+
+	## Combo logic: step 0->1->2, max 2 (3 hits total: step 0,1,2)
+	_combo_step = (_combo_step + 1) % 3
+	_combo_timeout = 1.5  ## Reset combo if no attack within 1.5s
+	EventBus.combo_changed.emit(_combo_step)
+
 	_attack_timer = stats.attack_cooldown
 	_set_state(State.ATTACK)
 
+	## Combo damage multiplier: step 2 (third hit) deals 1.8x
+	var combo_mult: float = 1.0
+	if _combo_step == 2:
+		combo_mult = 1.8
+
 	var hit_boxes: Array[Node] = get_tree().get_nodes_in_group("player_hitbox")
 	for hit_box: Area2D in hit_boxes:
+		if hit_box is HitBox:
+			(hit_box as HitBox).damage = int(float(stats.attack_damage) * combo_mult)
 		hit_box.monitoring = true
 		await get_tree().create_timer(0.15).timeout
+		if hit_box is HitBox:
+			(hit_box as HitBox).damage = stats.attack_damage  ## Reset
 		hit_box.monitoring = false
 
 	if _current_state == State.ATTACK:
