@@ -173,10 +173,12 @@ func _start_attack() -> void:
 	var hit_boxes: Array[Node] = get_tree().get_nodes_in_group("player_hitbox")
 	for hit_box: Area2D in hit_boxes:
 		if hit_box is HitBox:
-			(hit_box as HitBox).damage = int(float(stats.attack_damage) * combo_mult)
-		## Position hitbox in facing direction
-		hit_box.position.x = abs(hit_box.position.x) * _facing_direction
-		hit_box.monitoring = true
+			var hb: HitBox = hit_box as HitBox
+			hb.position.x = abs(hb.position.x) * _facing_direction
+			hb.attack(int(float(stats.attack_damage) * combo_mult), stats.attack_knockback)
+		else:
+			hit_box.position.x = abs(hit_box.position.x) * _facing_direction
+			hit_box.monitoring = true
 
 	## Visual: flash white briefly
 	var sprite: AnimatedSprite2D = get_node_or_null("AnimatedSprite2D") as AnimatedSprite2D

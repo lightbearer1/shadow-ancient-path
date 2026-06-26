@@ -197,13 +197,16 @@ func _update_animation() -> void:
 		State.DEAD:
 			sprite.stop()
 
-	if _player_ref != null:
-		sprite.flip_h = _player_ref.global_position.x < global_position.x
-
+		## Flip sprite to face movement direction
+		if _player_ref != null:
+			sprite.flip_h = _player_ref.global_position.x < global_position.x
+		elif _current_state == State.PATROL:
+			sprite.flip_h = _patrol_direction < 0
+		elif velocity.x != 0:
+			sprite.flip_h = velocity.x < 0
 
 func is_dead() -> bool:
 	return _current_state == State.DEAD
-
 
 func get_current_health() -> int:
 	return _current_health

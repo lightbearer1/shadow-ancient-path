@@ -16,10 +16,20 @@ func _ready() -> void:
 func enable() -> void:
 	_hit_targets.clear()
 	monitoring = true
+	## Immediately check for already-overlapping areas (monitoring only detects new entries)
+	for area: Area2D in get_overlapping_areas():
+		_on_area_entered(area)
 
 
 func disable() -> void:
 	monitoring = false
+
+
+func attack(dmg: int, kb: float) -> void:
+	## Single call: set damage, reset targets, enable, and check existing overlaps
+	damage = dmg
+	knockback_force = kb
+	enable()
 
 
 func _on_area_entered(area: Area2D) -> void:
