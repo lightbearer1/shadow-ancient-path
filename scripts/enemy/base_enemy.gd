@@ -1,7 +1,7 @@
 class_name BaseEnemy
 extends CharacterBody2D
 ## Base enemy class with finite state machine.
-## Extend for specific enemy types â€?override _execute_attack().
+## Extend for specific enemy types -- override _execute_attack().
 
 enum State {
 	IDLE,
