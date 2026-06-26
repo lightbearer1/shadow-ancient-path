@@ -4,8 +4,10 @@ extends Area2D
 
 @export var room_a: int = 0
 @export var room_b: int = 1
-@export var spawn_offset_a: Vector2 = Vector2(40, 0)   ## Offset when teleporting TO room_a
-@export var spawn_offset_b: Vector2 = Vector2(-40, 0)  ## Offset when teleporting TO room_b
+## Offset from transition center INTO room_a (usually negative X, going left)
+@export var spawn_offset_a: Vector2 = Vector2(-60, 0)
+## Offset from transition center INTO room_b (usually positive X, going right)
+@export var spawn_offset_b: Vector2 = Vector2(60, 0)
 
 
 func _ready() -> void:
@@ -28,13 +30,13 @@ func _on_body_entered(body: Node2D) -> void:
 	var current_room: int = cam.get_current_room()
 
 	if current_room == room_a:
-		## Going to room_b
+		## Going to room_b: teleport player to the RIGHT of the transition
 		cam.set_room(room_b)
 		player.global_position = global_position + spawn_offset_b
 	else:
-		## Going to room_a
+		## Going to room_a: teleport player to the LEFT of the transition
 		cam.set_room(room_a)
 		player.global_position = global_position + spawn_offset_a
 
-	## Force camera to snap instantly to player's new position
+	## Force camera to snap instantly
 	cam.snap_to_target()
