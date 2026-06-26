@@ -183,6 +183,9 @@ func _start_attack() -> void:
 	if sprite != null:
 		sprite.modulate = Color(1.5, 1.5, 1.5, 1)
 
+	## Attack slash visual effect
+	_spawn_slash_effect()
+
 	## Camera shake
 	_shake_camera(3.0, 0.08)
 
@@ -335,6 +338,54 @@ func _shake_camera(intensity: float, duration: float) -> void:
 		elapsed += get_physics_process_delta_time()
 		await get_tree().physics_frame
 	cam.offset = original_offset
+
+
+func _spawn_slash_effect() -> void:
+	## Create a visible attack arc to show hit range
+	var slash: Node2D = Node2D.new()
+	slash.name = "SlashEffect"
+	slash.position = Vector2(24.0 * _facing_direction, -4.0)
+	slash.z_index = 10
+	add_child(slash)
+
+	## Draw the slash arc programmatically
+	slash.draw.connect(_draw_slash.bind(slash, _facing_direction))
+	slash.queue_redraw()
+
+	## Fade out and remove
+	var tween: Tween = create_tween()
+	tween.tween_property(slash, "modulate:a", 0.0, 0.25)
+	tween.tween_callback(slash.queue_free)
+
+
+func _draw_slash(slash_node: Node2D, direction: int) -> void:
+	## Draw a 3-frame slash arc using lines
+	var arc_color: Color = Color(0.9, 0.85, 0.7, 0.8)
+	var glow_color: Color = Color(1.0, 0.9, 0.5, 0.3)
+
+	var center: Vector2 = Vector2.ZERO
+	var arc_points: Array[Vector2] = []
+	var arc_points_glow: Array[Vector2] = []
+
+	for i in range(9):
+		var angle: float = -PI / 3.0 + (PI / 1.5) * i / 8.0
+		if direction < 0:
+			angle = PI - angle
+		var r: float = 36.0
+		arc_points.append(center + Vector2(cos(angle) * r, sin(angle) * r))
+		arc_points_glow.append(center + Vector2(cos(angle) * (r + 8.0), sin(angle) * (r + 8.0)))
+
+	## Glow layer (wider)
+	for i in arc_points_glow.size() - 1:
+		slash_node.draw_line(arc_points_glow[i], arc_points_glow[i + 1], glow_color, 6.0)
+
+	## Main slash
+	for i in arc_points.size() - 1:
+		slash_node.draw_line(arc_points[i], arc_points[i + 1], arc_color, 3.0)
+
+	## Edge lines for sharpness
+	slash_node.draw_line(arc_points[0], arc_points[0] + Vector2(cos(-PI/2.5 * direction + (PI if direction < 0 else 0)), sin(-PI/2.5 * direction + (PI if direction < 0 else 0))) * 16.0, Color.WHITE, 1.5)
+	slash_node.draw_line(arc_points[-1], arc_points[-1] + Vector2(cos(-PI/2.5 * direction + (PI if direction < 0 else 0)), sin(-PI/2.5 * direction + (PI if direction < 0 else 0))) * 16.0, Color.WHITE, 1.5)
 
 
 func get_current_health() -> int:
