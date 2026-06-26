@@ -160,6 +160,8 @@ auto_start = false
 [node name="Transition_0_1" type="Area2D" parent="."]
 position = Vector2(1270, 360)
 script = ExtResource("14_transition")
+room_a = 0
+room_b = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Transition_0_1"]
 shape = SubResource("RectangleShape2D_transition")
@@ -252,7 +254,8 @@ position = Vector2(100, 0)
 [node name="Transition_1_2" type="Area2D" parent="."]
 position = Vector2(2550, 360)
 script = ExtResource("14_transition")
-target_room = 1
+room_a = 1
+room_b = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Transition_1_2"]
 shape = SubResource("RectangleShape2D_transition")

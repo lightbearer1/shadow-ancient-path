@@ -4,7 +4,7 @@ extends Resource
 
 @export var max_health: int = 100
 @export var move_speed: float = 200.0
-@export var jump_velocity: float = -800.0
+@export var jump_velocity: float = -600.0
 @export var dash_speed: float = 500.0
 @export var dash_duration: float = 0.15
 @export var dash_cooldown: float = 1.0

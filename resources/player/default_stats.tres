@@ -6,7 +6,7 @@
 script = ExtResource("1_stats")
 max_health = 100
 move_speed = 200.0
-jump_velocity = -800.0
+jump_velocity = -600.0
 dash_speed = 500.0
 dash_duration = 0.15
 dash_cooldown = 1.0
